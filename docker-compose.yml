@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  django:
+    build:
+      context:  ./api
+    command: gunicorn api.wsgi --bind 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+  
+  react:
+    build:
+      context: ./frontend
+    volumes:
+      - react_build:/frontend/build
+  
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:8080
+
+    volumes:
+      - ./nginx/nginx-setup.conf:/etc/nginx/conf.d/default.conf:ro
+      - react_build:/var/www/react
+    
+
+volumes:
+  react_build:
